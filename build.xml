@@ -1,0 +1,27 @@
+<project name="Utils" default="default" basedir="."
+	xmlns:ivy="antlib:org.apache.ivy.ant" >
+	
+	<description>Utils Default build script</description>
+
+	<property name="libary-name" value="Utils"/>
+	<property name="main-class" value=""/>
+
+	<import file="build-common.xml"/>
+	<!-- include file="build-common.xml"/ -->
+	<ant antfile="build-common.xml" inheritAll="true" inheritRefs="true" />
+
+	<property name="jarfile" value="Utils-TNT-"/>
+
+	<target name="default">
+		<antcall target="dist" />
+	</target>
+
+	<!-- =================================
+	          target: resolve
+     ================================= -->
+	<target name="resolve" description="--> retrieve dependencies with Ivy">
+	    <ivy:retrieve/>
+		<ivy:repreport xml="true" graph="true" />
+	</target>
+	
+</project>

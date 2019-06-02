@@ -1,0 +1,12 @@
+<project name="build-master" basedir=".">
+	<description>Default build-master script</description>
+	<property name="libary-name" value="Build-Master"/>
+
+	<ant dir="../utils" antfile="build.xml" />
+	<ant dir="../MidiController" antfile="build.xml" />
+	<ant dir="../MidiControllerVirtual" antfile="build.xml" />
+	<ant dir="../MidiControllerStandalone" antfile="build.xml" />
+	<ant dir="../SoloPlayer" antfile="build.xml" />
+
+
+</project>	

@@ -1,0 +1,107 @@
+<project name="build-common" basedir=".">
+	<description>Default build-common script</description>
+	<property name="libary-name" value="Build-Common"/>
+	
+	<!-- set global properties for this build -->
+	<property name="src" location="src"/>
+	<property name="src-test.dir" value="src-test" />
+	<property name="build" location="build"/>
+	<property name="dist" location="dist"/>
+	<property name="lib" location="../lib/lib"/>
+	<property name="log" location="log"/>
+	
+	<property name="version" value="1.00."/>
+		
+	<tstamp>
+		<format property="builddate" pattern="yyyyMMddhhmm" timezone="America/New_York"/>
+	</tstamp>
+
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+		<delete dir="${log}"/>		
+	</target>
+	
+	<target name="init" depends="clean">
+		
+		<mkdir dir="${log}"/>
+				
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+	</target>
+	
+	<target name="compile" depends="init" description="compile the source">	
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+		    <classpath>
+		      <pathelement path="${classpath}"/>
+		      <fileset dir="../lib">
+		        <include name="**/*.jar"/>
+		      </fileset>
+		    </classpath>
+		</javac>
+	</target>
+	
+	<target name="dist" depends="compile" description="generate the distribution">
+	
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
+		
+		<copy todir="${dist}/lib/ext">
+			<fileset dir="${lib}/ext"/>
+		</copy>
+		
+		<copy todir="${dist}/lib/">
+			<fileset dir="${lib}/">
+				<include name="*.jar" />
+				<exclude name="${jarfile}${version}*.jar" />
+				<!-- @TODO add excludes for current JAR being built so we don't add an old copy to our dist/lib -->
+			</fileset>
+		</copy>
+		
+		<copy todir="${dist}/config">
+			<fileset dir="config"/>
+		</copy>
+		
+		<copy todir="${dist}/res">
+			<fileset dir="res"/>
+		</copy>
+		
+		<copy todir="${dist}">
+			<fileset dir=".">
+				<include name="**/*.bat"/>
+				<include name="**/*.sh"/>
+		    	<include name="**/sp.*"/>
+				<include name="**/readme.txt"/>
+			</fileset>
+		</copy>
+	
+		<mkdir dir="${dist}/log"/>
+		<mkdir dir="${dist}/lib/patch"/>
+		
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="${dist}/lib/${jarfile}${version}${builddate}.jar" basedir="${build}">
+		    <manifest>
+		      	<attribute name="Permissions" value="sandbox"/>
+		    	<attribute name="Codebase" value="www.tnt-djs.com"/>
+		    	
+		      	<!-- Who is building this jar? -->
+		      	<attribute name="Built-By" value="${user.name}"/>
+		      
+		    	<!-- Information about the program itself -->
+		      	<attribute name="Implementation-Vendor" value="T-N-T DJ's, Cleveland Ohio"/>
+		      	<attribute name="Implementation-Title" value="${libary-name}"/>
+		      	<attribute name="Implementation-Version" value="${version}"/>
+		      
+				<attribute name="Main-Class" value="${main-class}"/>
+		    </manifest>						
+		</jar>
+
+		<!-- Share the jar file for others to use from the lib project --> 
+		<delete>
+			<fileset dir="${lib}/" includes="${jarfile}${version}**.jar" />
+		</delete>			
+		<copy file="${dist}/lib/${jarfile}${version}${builddate}.jar" tofile="${lib}/${jarfile}${version}${builddate}.jar" />
+	</target>			
+</project>
